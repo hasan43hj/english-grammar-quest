@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Grammar Quest - İngilizce Gramer Oyunu</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        @keyframes success {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        .slide-in { animation: slideIn 0.5s ease-out; }
+        .bounce { animation: bounce 1s ease-in-out infinite; }
+        .pulse { animation: pulse 2s ease-in-out infinite; }
+        .shake { animation: shake 0.5s ease-in-out; }
+        .success { animation: success 0.5s ease-out; }
+        
+        .option-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .option-btn:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .correct {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            animation: success 0.5s ease-out;
+        }
+        
+        .incorrect {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            animation: shake 0.5s ease-out;
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease-out;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Ana Ekran -->
+    <div id="homeScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="card rounded-3xl shadow-2xl p-8 max-w-2xl w-full fade-in">
+            <div class="text-center">
+                <div class="text-6xl mb-4 bounce">📚</div>
+                <h1 class="text-5xl font-bold text-gray-800 mb-4">English Grammar Quest</h1>
+                <p class="text-xl text-gray-600 mb-8">İngilizce gramer bilginizi test edin ve geliştirin!</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                    <div class="bg-blue-50 p-6 rounded-xl">
+                        <div class="text-3xl mb-2">🎯</div>
+                        <h3 class="font-bold text-gray-800 mb-2">Çoktan Seçmeli</h3>
+                        <p class="text-sm text-gray-600">Eğlenceli sorularla öğren</p>
+                    </div>
+                    <div class="bg-purple-50 p-6 rounded-xl">
+                        <div class="text-3xl mb-2">⭐</div>
+                        <h3 class="font-bold text-gray-800 mb-2">Puan Kazan</h3>
+                        <p class="text-sm text-gray-600">Başarını gör ve takip et</p>
+                    </div>
+                </div>
+                
+                <button onclick="showCategories()" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-12 py-4 rounded-full text-xl font-bold hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                    Oyuna Başla
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kategori Seçim Ekranı -->
+    <div id="categoryScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="card rounded-3xl shadow-2xl p-8 max-w-4xl w-full fade-in">
+            <h2 class="text-4xl font-bold text-gray-800 mb-2 text-center">Kategori Seçin</h2>
+            <p class="text-gray-600 mb-8 text-center">Hangi gramer konusunda kendinizi test etmek istersiniz?</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <button onclick="startQuiz('tenses')" class="option-btn bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl text-left hover:shadow-xl">
+                    <div class="text-4xl mb-3">⏰</div>
+                    <h3 class="text-2xl font-bold mb-2">Tenses</h3>
+                    <p class="text-blue-100 text-sm">Zamanlar ve kullanımları</p>
+                </button>
+                
+                <button onclick="startQuiz('prepositions')" class="option-btn bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl text-left hover:shadow-xl">
+                    <div class="text-4xl mb-3">📍</div>
+                    <h3 class="text-2xl font-bold mb-2">Prepositions</h3>
+                    <p class="text-green-100 text-sm">Edatlar ve kullanımları</p>
+                </button>
+                
+                <button onclick="startQuiz('conditionals')" class="option-btn bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-2xl text-left hover:shadow-xl">
+                    <div class="text-4xl mb-3">🔀</div>
+                    <h3 class="text-2xl font-bold mb-2">Conditionals</h3>
+                    <p class="text-purple-100 text-sm">Koşul cümleleri</p>
+                </button>
+                
+                <button onclick="startQuiz('articles')" class="option-btn bg-gradient-to-br from-red-500 to-red-600 text-white p-6 rounded-2xl text-left hover:shadow-xl">
+                    <div class="text-4xl mb-3">📝</div>
+                    <h3 class="text-2xl font-bold mb-2">Articles</h3>
+                    <p class="text-red-100 text-sm">A, An, The kullanımı</p>
+                </button>
+                
+                <button onclick="startQuiz('modal-verbs')" class="option-btn bg-gradient-to-br from-yellow-500 to-orange-600 text-white p-6 rounded-2xl text-left hover:shadow-xl">
+                    <div class="text-4xl mb-3">💪</div>
+                    <h3 class="text-2xl font-bold mb-2">Modal Verbs</h3>
+                    <p class="text-yellow-100 text-sm">Can, Could, Must...</p>
+                </button>
+                
+                <button onclick="startQuiz('passive-voice')" class="option-btn bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-6 rounded-2xl text-left hover:shadow-xl">
+                    <div class="text-4xl mb-3">🔄</div>
+                    <h3 class="text-2xl font-bold mb-2">Passive Voice</h3>
+                    <p class="text-indigo-100 text-sm">Pasif yapı cümleleri</p>
+                </button>
+            </div>
+            
+            <button onclick="showHome()" class="mt-8 bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-semibold hover:bg-gray-300 transition-all">
+                ← Ana Menü
+            </button>
+        </div>
+    </div>
+
+    <!-- Quiz Ekranı -->
+    <div id="quizScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="card rounded-3xl shadow-2xl p-8 max-w-3xl w-full fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <div class="text-lg font-semibold text-gray-700">
+                    Soru <span id="currentQuestion">1</span> / <span id="totalQuestions">10</span>
+                </div>
+                <div class="text-lg font-semibold text-gray-700">
+                    Puan: <span id="score" class="text-purple-600">0</span>
+                </div>
+            </div>
+            
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-6">
+                <div id="progressBar" class="progress-bar bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full" style="width: 0%"></div>
+            </div>
+            
+            <div id="questionCard" class="mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 slide-in" id="questionText"></h3>
+                <div id="optionsContainer" class="space-y-3"></div>
+            </div>
+            
+            <div id="feedback" class="hidden p-4 rounded-xl mb-6">
+                <p id="feedbackText" class="font-semibold"></p>
+            </div>
+            
+            <button id="nextButton" class="hidden bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-full font-bold hover:shadow-xl transition-all" onclick="nextQuestion()">
+                Sonraki Soru →
+            </button>
+        </div>
+    </div>
+
+    <!-- Sonuç Ekranı -->
+    <div id="resultScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="card rounded-3xl shadow-2xl p-8 max-w-2xl w-full fade-in text-center">
+            <div id="resultEmoji" class="text-8xl mb-4"></div>
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Tebrikler!</h2>
+            <p class="text-xl text-gray-600 mb-6">Quiz tamamlandı</p>
+            
+            <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-8 mb-8">
+                <div class="text-6xl font-bold text-purple-600 mb-2" id="finalScore"></div>
+                <p class="text-gray-700 text-lg">Toplam Puanınız</p>
+                
+                <div class="mt-6 grid grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl p-4">
+                        <div class="text-3xl font-bold text-green-600" id="correctAnswers"></div>
+                        <p class="text-sm text-gray-600">Doğru</p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4">
+                        <div class="text-3xl font-bold text-red-600" id="incorrectAnswers"></div>
+                        <p class="text-sm text-gray-600">Yanlış</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="performanceMessage" class="text-lg text-gray-700 mb-8 p-4 bg-yellow-50 rounded-xl"></div>
+            
+            <div class="space-x-4">
+                <button onclick="showCategories()" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-full font-bold hover:shadow-xl transition-all">
+                    Tekrar Dene
+                </button>
+                <button onclick="showHome()" class="bg-gray-200 text-gray-700 px-8 py-3 rounded-full font-bold hover:bg-gray-300 transition-all">
+                    Ana Menü
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = {
+            tenses: [
+                {
+                    question: "She ___ to London three times last year.",
+                    options: ["goes", "went", "has gone", "going"],
+                    correct: 1,
+                    explanation: "Geçmişte belirli bir zamanda olan eylemler için Simple Past (went) kullanılır."
+                },
+                {
+                    question: "I ___ my homework when you called me.",
+                    options: ["do", "did", "was doing", "have done"],
+                    correct: 2,
+                    explanation: "Geçmişte belirli bir anda devam eden eylemler için Past Continuous kullanılır."
+                },
+                {
+                    question: "They ___ in this city since 2010.",
+                    options: ["live", "lived", "have lived", "are living"],
+                    correct: 2,
+                    explanation: "'Since' ile Present Perfect (have lived) kullanılır."
+                },
+                {
+                    question: "By next year, we ___ here for ten years.",
+                    options: ["will live", "will have lived", "are living", "lived"],
+                    correct: 1,
+                    explanation: "Gelecekte belirli bir zamana kadar tamamlanmış olacak eylemler için Future Perfect kullanılır."
+                },
+                {
+                    question: "He ___ his car. It looks brand new!",
+                    options: ["washes", "has washed", "washed", "is washing"],
+                    correct: 1,
+                    explanation: "Yakın geçmişte olan ve şu anda etkisi görülen eylemler için Present Perfect kullanılır."
+                },
+                {
+                    question: "Tomorrow at 9 AM, I ___ a meeting.",
+                    options: ["have", "will have", "will be having", "am having"],
+                    correct: 2,
+                    explanation: "Gelecekte belirli bir zamanda devam edecek eylemler için Future Continuous kullanılır."
+                },
+                {
+                    question: "She usually ___ tea in the morning.",
+                    options: ["drinks", "is drinking", "drank", "has drunk"],
+                    correct: 0,
+                    explanation: "Alışkanlıklar ve genel gerçekler için Simple Present kullanılır."
+                },
+                {
+                    question: "We ___ dinner when the lights went out.",
+                    options: ["have", "had", "were having", "are having"],
+                    correct: 2,
+                    explanation: "Geçmişte başka bir olay olurken devam eden eylemler için Past Continuous kullanılır."
+                },
+                {
+                    question: "I ___ to Paris before. It's my first time.",
+                    options: ["never went", "have never been", "never go", "am never going"],
+                    correct: 1,
+                    explanation: "Şimdiye kadarki yaşam deneyimlerini anlatmak için Present Perfect kullanılır."
+                },
+                {
+                    question: "By the time you arrive, I ___ cooking.",
+                    options: ["will finish", "will have finished", "finish", "finished"],
+                    correct: 1,
+                    explanation: "Gelecekte bir olay olmadan önce tamamlanacak eylemler için Future Perfect kullanılır."
+                }
+            ],
+            prepositions: [
+                {
+                    question: "She is good ___ mathematics.",
+                    options: ["in", "at", "on", "for"],
+                    correct: 1,
+                    explanation: "'Good at' bir şeyde yetenekli olmak anlamında kullanılır."
+                },
+                {
+                    question: "The book is ___ the table.",
+                    options: ["in", "at", "on", "by"],
+                    correct: 2,
+                    explanation: "Bir yüzey üzerinde olan nesneler için 'on' kullanılır."
+                },
+                {
+                    question: "We arrived ___ the station at 5 PM.",
+                    options: ["in", "at", "on", "to"],
+                    correct: 1,
+                    explanation: "Belirli bir yer için 'arrive at' kullanılır."
+                },
+                {
+                    question: "I was born ___ 1995.",
+                    options: ["in", "at", "on", "by"],
+                    correct: 0,
+                    explanation: "Yıllar için 'in' kullanılır."
+                },
+                {
+                    question: "He lives ___ New York.",
+                    options: ["in", "at", "on", "by"],
+                    correct: 0,
+                    explanation: "Şehirler için 'in' kullanılır."
+                },
+                {
+                    question: "The meeting is ___ Monday.",
+                    options: ["in", "at", "on", "by"],
+                    correct: 2,
+                    explanation: "Günler için 'on' kullanılır."
+                },
+                {
+                    question: "She is interested ___ photography.",
+                    options: ["in", "at", "on", "for"],
+                    correct: 0,
+                    explanation: "'Interested in' bir şeyle ilgilenmek anlamında kullanılır."
+                },
+                {
+                    question: "The cat is hiding ___ the bed.",
+                    options: ["above", "under", "on", "at"],
+                    correct: 1,
+                    explanation: "Bir şeyin altında olduğunu belirtmek için 'under' kullanılır."
+                },
+                {
+                    question: "I'll meet you ___ the afternoon.",
+                    options: ["in", "at", "on", "by"],
+                    correct: 0,
+                    explanation: "Günün bölümleri (morning, afternoon, evening) için 'in' kullanılır."
+                },
+                {
+                    question: "She's waiting ___ the bus stop.",
+                    options: ["in", "at", "on", "by"],
+                    correct: 1,
+                    explanation: "Küçük, belirli yerler için 'at' kullanılır."
+                }
+            ],
+            conditionals: [
+                {
+                    question: "If it ___ tomorrow, we will stay home.",
+                    options: ["rains", "will rain", "rained", "would rain"],
+                    correct: 0,
+                    explanation: "Type 1 Conditional: if + present simple, will + verb"
+                },
+                {
+                    question: "If I ___ rich, I would buy a yacht.",
+                    options: ["am", "was", "were", "will be"],
+                    correct: 2,
+                    explanation: "Type 2 Conditional: if + past simple (were for all persons), would + verb"
+                },
+                {
+                    question: "If you heat ice, it ___.",
+                    options: ["melts", "will melt", "melted", "would melt"],
+                    correct: 0,
+                    explanation: "Zero Conditional (genel gerçekler): if + present simple, present simple"
+                },
+                {
+                    question: "If I had known, I ___ you.",
+                    options: ["tell", "will tell", "would tell", "would have told"],
+                    correct: 3,
+                    explanation: "Type 3 Conditional: if + past perfect, would have + past participle"
+                },
+                {
+                    question: "If she studies hard, she ___ the exam.",
+                    options: ["passes", "will pass", "would pass", "passed"],
+                    correct: 1,
+                    explanation: "Type 1 Conditional: gerçekleşme ihtimali yüksek gelecek durumlar için kullanılır."
+                },
+                {
+                    question: "If I ___ you, I would apologize.",
+                    options: ["am", "was", "were", "will be"],
+                    correct: 2,
+                    explanation: "Type 2 Conditional: 'If I were you' tavsiye vermek için kullanılır."
+                },
+                {
+                    question: "If they had left earlier, they ___ the train.",
+                    options: ["catch", "will catch", "would catch", "would have caught"],
+                    correct: 3,
+                    explanation: "Type 3 Conditional: geçmişte olmayan bir durumu hayal etmek için kullanılır."
+                },
+                {
+                    question: "If you ___ water to 100°C, it boils.",
+                    options: ["heat", "will heat", "heated", "would heat"],
+                    correct: 0,
+                    explanation: "Zero Conditional: bilimsel gerçekler için kullanılır."
+                },
+                {
+                    question: "If she had more time, she ___ learn Spanish.",
+                    options: ["will", "would", "can", "could have"],
+                    correct: 1,
+                    explanation: "Type 2 Conditional: şu anki gerçekleşmesi olası olmayan durumlar için kullanılır."
+                },
+                {
+                    question: "If we ___ harder, we would have won the game.",
+                    options: ["tried", "had tried", "try", "will try"],
+                    correct: 1,
+                    explanation: "Type 3 Conditional: geçmişteki pişmanlıkları ifade etmek için kullanılır."
+                }
+            ],
+            articles: [
+                {
+                    question: "___ apple a day keeps the doctor away.",
+                    options: ["A", "An", "The", "-"],
+                    correct: 1,
+                    explanation: "Sesli harfle başlayan tekil isimler için 'an' kullanılır."
+                },
+                {
+                    question: "I need ___ new phone.",
+                    options: ["a", "an", "the", "-"],
+                    correct: 0,
+                    explanation: "Sessiz harfle başlayan tekil, belirsiz isimler için 'a' kullanılır."
+                },
+                {
+                    question: "___ sun rises in the east.",
+                    options: ["A", "An", "The", "-"],
+                    correct: 2,
+                    explanation: "Evrende tek olan şeyler için 'the' kullanılır."
+                },
+                {
+                    question: "She plays ___ piano beautifully.",
+                    options: ["a", "an", "the", "-"],
+                    correct: 2,
+                    explanation: "Müzik aletlerinden önce 'the' kullanılır."
+                },
+                {
+                    question: "I love ___ chocolate.",
+                    options: ["a", "an", "the", "-"],
+                    correct: 3,
+                    explanation: "Genel anlamda sayılamayan isimler için article kullanılmaz."
+                },
+                {
+                    question: "He is ___ honest man.",
+                    options: ["a", "an", "the", "-"],
+                    correct: 1,
+                    explanation: "'Honest' kelimesi 'h' sessiz olduğu için 'an' kullanılır."
+                },
+                {
+                    question: "They went to ___ school together.",
+                    options: ["a", "an", "the", "-"],
+                    correct: 3,
+                    explanation: "Genel anlamda okula gitmek için article kullanılmaz."
+                },
+                {
+                    question: "Can you close ___ door, please?",
+                    options: ["a", "an", "the", "-"],
+                    correct: 2,
+                    explanation: "Konuşanların bildiği belirli bir kapı için 'the' kullanılır."
+                },
+                {
+                    question: "___ Mount Everest is the highest mountain.",
+                    options: ["A", "An", "The", "-"],
+                    correct: 3,
+                    explanation: "Dağ isimleri için genellikle article kullanılmaz."
+                },
+                {
+                    question: "She is ___ engineer.",
+                    options: ["a", "an", "the", "-"],
+                    correct: 1,
+                    explanation: "Sesli harfle başlayan meslekler için 'an' kullanılır."
+                }
+            ],
+            "modal-verbs": [
+                {
+                    question: "You ___ wear a seatbelt. It's the law.",
+                    options: ["can", "must", "may", "might"],
+                    correct: 1,
+                    explanation: "'Must' zorunluluk ve yasal gereklilik ifade eder."
+                },
+                {
+                    question: "___ I borrow your pen?",
+                    options: ["Must", "Should", "Can", "Need"],
+                    correct: 2,
+                    explanation: "'Can' izin istemek için kullanılır."
+                },
+                {
+                    question: "She ___ speak three languages.",
+                    options: ["can", "must", "should", "would"],
+                    correct: 0,
+                    explanation: "'Can' yetenek ifade eder."
+                },
+                {
+                    question: "You ___ eat more vegetables. They're healthy.",
+                    options: ["can", "must", "should", "would"],
+                    correct: 2,
+                    explanation: "'Should' tavsiye vermek için kullanılır."
+                },
+                {
+                    question: "It ___ rain tomorrow. The sky looks cloudy.",
+                    options: ["can", "must", "might", "should"],
+                    correct: 2,
+                    explanation: "'Might' olasılık ifade eder (belki)."
+                },
+                {
+                    question: "When I was young, I ___ run very fast.",
+                    options: ["can", "could", "may", "must"],
+                    correct: 1,
+                    explanation: "'Could' geçmişteki yeteneği ifade eder."
+                },
+                {
+                    question: "___ you help me with this?",
+                    options: ["Must", "Should", "Could", "May"],
+                    correct: 2,
+                    explanation: "'Could' kibarca rica etmek için kullanılır."
+                },
+                {
+                    question: "You ___ not smoke in the hospital.",
+                    options: ["can", "may", "must", "should"],
+                    correct: 2,
+                    explanation: "'Must not' yasak ifade eder."
+                },
+                {
+                    question: "She ___ be at home. Her car is in the garage.",
+                    options: ["can", "must", "may", "should"],
+                    correct: 1,
+                    explanation: "'Must' güçlü tahmin ifade eder (muhakkak)."
+                },
+                {
+                    question: "___ I leave early today?",
+                    options: ["Must", "May", "Should", "Need"],
+                    correct: 1,
+                    explanation: "'May' resmi olarak izin istemek için kullanılır."
+                }
+            ],
+            "passive-voice": [
+                {
+                    question: "The letter ___ by John yesterday.",
+                    options: ["wrote", "was written", "is written", "writes"],
+                    correct: 1,
+                    explanation: "Geçmiş zamanda pasif yapı: was/were + past participle"
+                },
+                {
+                    question: "English ___ in many countries.",
+                    options: ["speaks", "is speaking", "is spoken", "spoke"],
+                    correct: 2,
+                    explanation: "Şimdiki zamanda pasif yapı: is/are + past participle"
+                },
+                {
+                    question: "The house ___ in 1990.",
+                    options: ["built", "was built", "is built", "builds"],
+                    correct: 1,
+                    explanation: "Geçmiş zamanda belirli bir anda yapılan eylemler için was/were + past participle kullanılır."
+                },
+                {
+                    question: "The car ___ right now.",
+                    options: ["repairs", "is repairing", "is being repaired", "was repaired"],
+                    correct: 2,
+                    explanation: "Şu anda devam eden pasif eylemler için is/are being + past participle kullanılır."
+                },
+                {
+                    question: "A new bridge ___ next year.",
+                    options: ["will build", "will be built", "is built", "builds"],
+                    correct: 1,
+                    explanation: "Gelecek zamanda pasif yapı: will be + past participle"
+                },
+                {
+                    question: "The movie ___ by millions of people.",
+                    options: ["watched", "has watched", "has been watched", "is watching"],
+                    correct: 2,
+                    explanation: "Present Perfect pasif: has/have been + past participle"
+                },
+                {
+                    question: "The pizza ___ in the oven when I arrived.",
+                    options: ["cooked", "was cooking", "was being cooked", "is cooked"],
+                    correct: 2,
+                    explanation: "Past Continuous pasif: was/were being + past participle"
+                },
+                {
+                    question: "All the homework ___ by the students.",
+                    options: ["completed", "was completed", "is completed", "completes"],
+                    correct: 1,
+                    explanation: "Geçmiş zamanda tamamlanmış pasif eylemler için was/were + past participle kullanılır."
+                },
+                {
+                    question: "The windows ___ every week.",
+                    options: ["clean", "are cleaned", "cleaned", "cleaning"],
+                    correct: 1,
+                    explanation: "Düzenli olarak yapılan eylemler için simple present pasif kullanılır."
+                },
+                {
+                    question: "The package ___ tomorrow.",
+                    options: ["delivers", "will deliver", "will be delivered", "is delivering"],
+                    correct: 2,
+                    explanation: "Gelecekte yapılacak pasif eylemler için will be + past participle kullanılır."
+                }
+            ]
+        };
+
+        let currentCategory = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let answered = false;
+
+        function showHome() {
+            document.getElementById('homeScreen').classList.remove('hidden');
+            document.getElementById('categoryScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+        }
+
+        function showCategories() {
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('categoryScreen').classList.remove('hidden');
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+        }
+
+        function startQuiz(category) {
+            currentCategory = category;
+            currentQuestionIndex = 0;
+            score = 0;
+            correctCount = 0;
+            incorrectCount = 0;
+            
+            document.getElementById('categoryScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const categoryQuestions = questions[currentCategory];
+            const question = categoryQuestions[currentQuestionIndex];
+            
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = categoryQuestions.length;
+            document.getElementById('score').textContent = score;
+            
+            const progress = ((currentQuestionIndex) / categoryQuestions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn w-full bg-white border-2 border-gray-200 p-4 rounded-xl text-left font-semibold hover:border-purple-500 transition-all';
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+            
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('nextButton').classList.add('hidden');
+        }
+
+        function checkAnswer(selectedIndex) {
+            if (answered) return;
+            answered = true;
+            
+            const categoryQuestions = questions[currentCategory];
+            const question = categoryQuestions[currentQuestionIndex];
+            const buttons = document.querySelectorAll('#optionsContainer .option-btn');
+            
+            buttons.forEach((button, index) => {
+                button.disabled = true;
+                if (index === question.correct) {
+                    button.classList.add('correct');
+                    button.classList.remove('border-gray-200');
+                    button.classList.add('text-white');
+                }
+            });
+            
+            const feedback = document.getElementById('feedback');
+            const feedbackText = document.getElementById('feedbackText');
+            
+            if (selectedIndex === question.correct) {
+                score += 10;
+                correctCount++;
+                buttons[selectedIndex].classList.add('correct');
+                feedback.className = 'p-4 rounded-xl mb-6 bg-green-100 border-2 border-green-500 success';
+                feedbackText.innerHTML = '✅ Doğru! ' + question.explanation;
+            } else {
+                incorrectCount++;
+                buttons[selectedIndex].classList.add('incorrect');
+                buttons[selectedIndex].classList.add('text-white');
+                feedback.className = 'p-4 rounded-xl mb-6 bg-red-100 border-2 border-red-500 shake';
+                feedbackText.innerHTML = '❌ Yanlış. ' + question.explanation;
+            }
+            
+            feedback.classList.remove('hidden');
+            document.getElementById('score').textContent = score;
+            document.getElementById('nextButton').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            const categoryQuestions = questions[currentCategory];
+            
+            if (currentQuestionIndex < categoryQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            document.getElementById('finalScore').textContent = score + ' Puan';
+            document.getElementById('correctAnswers').textContent = correctCount;
+            document.getElementById('incorrectAnswers').textContent = incorrectCount;
+            
+            const percentage = (correctCount / (correctCount + incorrectCount)) * 100;
+            const resultEmoji = document.getElementById('resultEmoji');
+            const performanceMessage = document.getElementById('performanceMessage');
+            
+            if (percentage >= 90) {
+                resultEmoji.textContent = '🏆';
+                performanceMessage.textContent = '🌟 Mükemmel! Harikasın! Gramer konusunda gerçekten başarılısın!';
+            } else if (percentage >= 70) {
+                resultEmoji.textContent = '🎉';
+                performanceMessage.textContent = '👏 Tebrikler! Çok iyi bir performans sergiledin!';
+            } else if (percentage >= 50) {
+                resultEmoji.textContent = '😊';
+                performanceMessage.textContent = '👍 Fena değil! Biraz daha pratikle daha da iyi olacaksın!';
+            } else {
+                resultEmoji.textContent = '📚';
+                performanceMessage.textContent = '💪 Vazgeçme! Pratik yaparak gelişebilirsin. Tekrar dene!';
+            }
+        }
+    </script>
+</body>
+</html>
