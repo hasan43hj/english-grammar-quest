@@ -45,7 +45,58 @@
         .shake { animation: shake 0.5s ease-in-out; }
         .success { animation: success 0.5s ease-out; }
         
-        .option-btn {
+        .memory-card {
+            perspective: 1000px;
+            cursor: pointer;
+            height: 90px;
+        }
+        .memory-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+        }
+        .memory-card.flipped .memory-card-inner {
+            transform: rotateY(180deg);
+        }
+        .memory-card-front, .memory-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 8px;
+        }
+        .memory-card-front {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.5rem;
+        }
+        .memory-card-back {
+            transform: rotateY(180deg);
+        }
+        .memory-card-back.en {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        .memory-card-back.tr {
+            background: linear-gradient(135deg, #10b981 0%, #065f46 100%);
+            color: white;
+        }
+        .memory-card.matched .memory-card-inner {
+            transform: rotateY(180deg);
+        }
+        .memory-card.matched .memory-card-back {
+            opacity: 0.6;
+            box-shadow: 0 0 0 3px #10b981;
+        }
             transition: all 0.3s ease;
         }
         
@@ -87,22 +138,33 @@
                 <h1 class="text-5xl font-bold text-gray-800 mb-4">English Grammar Quest</h1>
                 <p class="text-xl text-gray-600 mb-8">İngilizce gramer bilginizi test edin ve geliştirin!</p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                    <div class="bg-blue-50 p-6 rounded-xl">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-blue-50 p-4 rounded-xl">
                         <div class="text-3xl mb-2">🎯</div>
-                        <h3 class="font-bold text-gray-800 mb-2">Çoktan Seçmeli</h3>
-                        <p class="text-sm text-gray-600">Eğlenceli sorularla öğren</p>
+                        <h3 class="font-bold text-gray-800 mb-1">Gramer Quiz</h3>
+                        <p class="text-sm text-gray-600">Çoktan seçmeli sorular</p>
                     </div>
-                    <div class="bg-purple-50 p-6 rounded-xl">
+                    <div class="bg-purple-50 p-4 rounded-xl">
                         <div class="text-3xl mb-2">⭐</div>
-                        <h3 class="font-bold text-gray-800 mb-2">Puan Kazan</h3>
-                        <p class="text-sm text-gray-600">Başarını gör ve takip et</p>
+                        <h3 class="font-bold text-gray-800 mb-1">Puan Kazan</h3>
+                        <p class="text-sm text-gray-600">Başarını takip et</p>
                     </div>
+                    <div class="bg-green-50 p-4 rounded-xl">
+                        <div class="text-3xl mb-2">🧠</div>
+                        <h3 class="font-bold text-gray-800 mb-1">Hafıza Oyunu</h3>
+                        <p class="text-sm text-gray-600">Kelime eşleştirme</p>
+                    </div>
+
                 </div>
                 
-                <button onclick="showCategories()" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-12 py-4 rounded-full text-xl font-bold hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                    Oyuna Başla
-                </button>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
+                    <button onclick="showCategories()" class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-full text-lg font-bold hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                        🎯 Gramer Quizi
+                    </button>
+                    <button onclick="showMemoryGame()" class="bg-gradient-to-r from-green-500 to-teal-600 text-white px-8 py-4 rounded-full text-lg font-bold hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                        🧠 Hafıza Oyunu
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -154,6 +216,33 @@
             <button onclick="showHome()" class="mt-8 bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-semibold hover:bg-gray-300 transition-all">
                 ← Ana Menü
             </button>
+        </div>
+    </div>
+
+    <!-- Hafıza Oyunu Ekranı -->
+    <div id="memoryScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="card rounded-3xl shadow-2xl p-8 max-w-4xl w-full fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800">🧠 Hafıza Oyunu</h2>
+                    <p class="text-gray-500 text-sm mt-1">İngilizce - Türkçe kelime eşleştir</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500">Hamle: <span id="moveCount" class="font-bold text-purple-600">0</span></div>
+                    <div class="text-sm text-gray-500">Eşleşen: <span id="matchCount" class="font-bold text-green-600">0</span>/8</div>
+                </div>
+            </div>
+            <div id="memoryGrid" class="grid grid-cols-4 gap-3 mb-6"></div>
+            <div id="memoryWin" class="hidden text-center py-6">
+                <div class="text-6xl mb-3">🎉</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Tebrikler! Tüm kartları eşleştirdin!</h3>
+                <p class="text-gray-600 mb-4">Toplam <span id="finalMoves" class="font-bold text-purple-600"></span> hamlede tamamladın!</p>
+                <div class="flex gap-4 justify-center">
+                    <button onclick="startMemoryGame()" class="bg-gradient-to-r from-green-500 to-teal-600 text-white px-8 py-3 rounded-full font-bold hover:shadow-xl transition-all">Tekrar Oyna</button>
+                    <button onclick="showHome()" class="bg-gray-200 text-gray-700 px-8 py-3 rounded-full font-bold hover:bg-gray-300 transition-all">Ana Menü</button>
+                </div>
+            </div>
+            <button onclick="showHome()" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-semibold hover:bg-gray-300 transition-all">← Ana Menü</button>
         </div>
     </div>
 
@@ -612,6 +701,7 @@
             document.getElementById('categoryScreen').classList.add('hidden');
             document.getElementById('quizScreen').classList.add('hidden');
             document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('memoryScreen').classList.add('hidden');
         }
 
         function showCategories() {
@@ -619,6 +709,7 @@
             document.getElementById('categoryScreen').classList.remove('hidden');
             document.getElementById('quizScreen').classList.add('hidden');
             document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('memoryScreen').classList.add('hidden');
         }
 
         function startQuiz(category) {
@@ -739,6 +830,117 @@
                 performanceMessage.textContent = '💪 Vazgeçme! Pratik yaparak gelişebilirsin. Tekrar dene!';
             }
         }
+
+        const wordPairs = [
+            { en: "Apple", tr: "Elma" },
+            { en: "Book", tr: "Kitap" },
+            { en: "Cat", tr: "Kedi" },
+            { en: "Dog", tr: "Köpek" },
+            { en: "House", tr: "Ev" },
+            { en: "Water", tr: "Su" },
+            { en: "Sun", tr: "Güneş" },
+            { en: "Moon", tr: "Ay" },
+            { en: "Tree", tr: "Ağaç" },
+            { en: "Bird", tr: "Kuş" },
+            { en: "Fish", tr: "Balık" },
+            { en: "Flower", tr: "Çiçek" },
+            { en: "Star", tr: "Yıldız" },
+            { en: "Cloud", tr: "Bulut" },
+            { en: "Rain", tr: "Yağmur" },
+            { en: "Fire", tr: "Ateş" }
+        ];
+
+        let memoryCards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let canFlip = true;
+
+        function showMemoryGame() {
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('memoryScreen').classList.remove('hidden');
+            startMemoryGame();
+        }
+
+        function startMemoryGame() {
+            matchedPairs = 0;
+            moves = 0;
+            flippedCards = [];
+            canFlip = true;
+            document.getElementById('moveCount').textContent = '0';
+            document.getElementById('matchCount').textContent = '0';
+            document.getElementById('memoryWin').classList.add('hidden');
+
+            // 8 çift seç
+            const selected = [...wordPairs].sort(() => Math.random() - 0.5).slice(0, 8);
+            const cards = [];
+            selected.forEach(pair => {
+                cards.push({ id: pair.en, text: pair.en, type: 'en', pairId: pair.en });
+                cards.push({ id: pair.tr, text: pair.tr, type: 'tr', pairId: pair.en });
+            });
+            cards.sort(() => Math.random() - 0.5);
+
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+            cards.forEach((card, index) => {
+                const div = document.createElement('div');
+                div.className = 'memory-card';
+                div.dataset.index = index;
+                div.dataset.pairId = card.pairId;
+                div.dataset.type = card.type;
+                div.innerHTML = `
+                    <div class="memory-card-inner">
+                        <div class="memory-card-front">🔤</div>
+                        <div class="memory-card-back ${card.type}">${card.text}</div>
+                    </div>`;
+                div.addEventListener('click', () => flipCard(div));
+                grid.appendChild(div);
+            });
+        }
+
+        function flipCard(card) {
+            if (!canFlip) return;
+            if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+            if (flippedCards.length === 2) return;
+
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                moves++;
+                document.getElementById('moveCount').textContent = moves;
+                checkMemoryMatch();
+            }
+        }
+
+        function checkMemoryMatch() {
+            const [a, b] = flippedCards;
+            const sameType = a.dataset.type === b.dataset.type;
+            const samePair = a.dataset.pairId === b.dataset.pairId;
+
+            if (samePair && !sameType) {
+                a.classList.add('matched');
+                b.classList.add('matched');
+                matchedPairs++;
+                document.getElementById('matchCount').textContent = matchedPairs;
+                flippedCards = [];
+                if (matchedPairs === 8) {
+                    setTimeout(() => {
+                        document.getElementById('finalMoves').textContent = moves;
+                        document.getElementById('memoryWin').classList.remove('hidden');
+                    }, 500);
+                }
+            } else {
+                canFlip = false;
+                setTimeout(() => {
+                    a.classList.remove('flipped');
+                    b.classList.remove('flipped');
+                    flippedCards = [];
+                    canFlip = true;
+                }, 1000);
+            }
+        }
+        // ---- HAFIZA OYUNU SON ----
     </script>
 </body>
 </html>
